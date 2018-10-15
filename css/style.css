@@ -1,0 +1,33 @@
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+.response-map {
+  width: 100%;
+  height: 350px;
+}
+
+/* .disaster-map {
+  height: 100%;
+  width: 100%;
+}
+.disaster-map svg path {
+  pointer-events: all;
+}
+.disaster-map {
+  background-color:rgba(255,255,255,0.4);
+} */
+.admin {
+  stroke-linecap: round;
+  /* fill: rgba(16,20,18,0.1); */
+  fill: none;
+  /* fill-opacity: 0.1; */
+  stroke: #000;
+  stroke-width: 1px;
+}
+.admin__default {
+  
+}
