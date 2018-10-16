@@ -12,8 +12,9 @@ var geoFilename = 'sulawesi-admin3.json'; // topojson file
 var topojsonObjectsGroup = 'admin3';
 // topojson geoFile should have
 // admin names with a key equal to their level (1,2,3)
-// WARNING: right now it only works with displaying names for 2 and 3 in various page elements
 // and an `ID` field with the p-code for the linked admin level
+// page will display admin stack labels for the following (need to exist in the topojson)
+var adminLabelLvls = ["2", "3"];
 // colors from http://colorbrewer2.org & https://bl.ocks.org/mbostock/5577023
 var myColorScale = ["#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#a50f15","#67000d"];
 
@@ -118,8 +119,11 @@ function syncMaps() {
 
 // handles tooltip text for mouse events on the d3 drawn admin areas
 function handleMouseover(d,i) {
-  var tooltipText = "<small><span class='place-name'>" + toTitleCase(d.properties['2']) +
-    ", " + toTitleCase(d.properties['3']) + "</span>";
+  var placeNames = []
+  for(n=0;n<adminLabelLvls.length;n++) {
+    placeNames.push( toTitleCase( d.properties[adminLabelLvls[n]] ) );
+  }
+  var tooltipText = "<small><span class='place-name'>" + placeNames.join(", ") + "</span>";
   var dataKey = d3.select(this).attr('data-response');  
   if(dataKey !== null) {
     d.properties.response.forEach(function(item,itemIndex){
@@ -163,8 +167,11 @@ function colorMap(responseDataIndex, responseName) {
   for(i=0;i<scaleNest.length;i++) {
     for(n=0;n<adminFeatures.length;n++){
       if(scaleNest[i].key == adminFeatures[n].properties.ID){
-        listHtml += '<li>' + toTitleCase(adminFeatures[n].properties['2']) + ', ' + 
-          toTitleCase(adminFeatures[n].properties['3']) + ' - <small>' + scaleNest[i].value.total_number + '</small></li>'
+        var placeNames = []
+        for(b=0;b<adminLabelLvls.length;b++) {
+          placeNames.push( toTitleCase( adminFeatures[n].properties[adminLabelLvls[b]] ) );
+        }        
+        listHtml += '<li>' + placeNames.join(", ") + ' - <small>' + scaleNest[i].value.total_number + '</small></li>'
         break;
       }
     }  
@@ -312,6 +319,8 @@ function createSectorMap(index, callback) {
         '</button>' +
         '<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">' +
           controlListItems +
+          // '<li role="separator" class="divider"></li>' +
+          // '<li><a href="#" onClick="colormap(' + index + ",'" + "ALL'" + ')">All data</a></li>' +
         '</ul>' +
       '</div>'
   }).addTo(map);
