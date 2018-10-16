@@ -4,9 +4,20 @@ html, body {
   height: 100%;
   width: 100%;
 }
+.row.display-row .response-map, .row.display-row .response-list {
+  height: 350px;
+}
 .response-map {
   width: 100%;
-  height: 350px;
+  height: 100%;
+}
+.layer-label .note {
+  font-size: 12px;
+  font-weight: 300;
+}
+.response-list {
+  height: 100%;
+  overflow-y: scroll;
 }
 .response-map svg path {
   pointer-events: all;
