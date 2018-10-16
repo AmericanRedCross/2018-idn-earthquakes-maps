@@ -93,8 +93,9 @@ function colorMap(responseDataIndex, responseName) {
     if(d.properties.response){
       var styled = false;
       d.properties.response.forEach(function(item,itemIndex){
-        var thisItem = item;
         if(item.key == responseName) {
+          console.log("match")
+          console.log(item)
           styled = true;
           d3.select(mapElement).style("fill", function(d){
             return quantize(item.value.total_number);
@@ -154,8 +155,9 @@ function createSectorMap(index, callback) {
   var svg = d3.select('#'+mapId).select('svg');
   var adminGeoGroup = svg.append('g').attr('id', 'adminGeo-'+index);
   var admins;
-  
-  var sectorJoin = adminFeatures;
+
+  // deep clone the array of objects
+  var sectorJoin = JSON.parse(JSON.stringify(adminFeatures))
   for(a=0;a<sectorJoin.length;a++) {
     for(b=0;b<sectorResponseData[0].values.length;b++) {
       if(sectorJoin[a].properties.ID == sectorResponseData[0].values[b].key) {
