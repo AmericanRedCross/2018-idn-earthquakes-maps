@@ -36,6 +36,10 @@ function copy (o) {
   return output;
 }
 
+function showDisclaimer() {
+  window.alert("The maps used do not imply the expression of any opinion on the part of the International Federation of Red Cross and Red Crescent Societies or National Societies concerning the legal status of a territory or of its authorities.");
+}
+
 // tooltip follows cursor
 $(document).ready(function() {
   $('body').mouseover(function(e) {
@@ -226,7 +230,7 @@ function createSectorMap(index, callback) {
   
   // create a HOT OSM basemap tile layer to add to our leaflet map
   var hotUrl = 'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-    hotAttribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, Tiles from <a href="http://hot.openstreetmap.org/" target="_blank">H.O.T.</a>',
+    hotAttribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, tiles from <a href="http://hot.openstreetmap.org/" target="_blank">H.O.T.</a> | <a title="Disclaimer" onClick="showDisclaimer();">Boundaries disclaimer</a>',
     hotLayer = L.tileLayer(hotUrl, {attribution: hotAttribution});
   
   // creat a page element for each unique "sector" value  
