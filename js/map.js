@@ -12,19 +12,59 @@ var topojsonObjectsGroup = 'admin3';
 // topojson geoFile should have
 // admin names with a key equal to their level (1,2,3)
 // and an "ID" field with the p-code for the linked admin level
+var myColorScale = ["#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#a50f15", "#67000d"];
 
-
-// globals
+// global variables
 var responseData, adminFeatures
 
 
-window.onload = function() {
+// helper functions
+// ################
+
+// https://www.codementor.io/avijitgupta/deep-copying-in-js-7x6q8vh5d 
+function copy (o) {
+  var output, v, key;
+  output = Array.isArray(o) ? [] : {};
+  for (key in o) {
+    v = o[key];
+    output[key] = (typeof v === "object") ? copy(v) : v;
+  }
+  return output;
+}
+
+// tooltip follows cursor
+$(document).ready(function() {
+  $('body').mouseover(function(e) {
+    //Set the X and Y axis of the tooltip
+    $('#tooltip').css('top', e.pageY + 10 );
+    $('#tooltip').css('left', e.pageX + 20 );
+  }).mousemove(function(e) {
+    //Keep changing the X and Y axis for the tooltip, thus, the tooltip move along with the mouse
+    $("#tooltip").css({top:(e.pageY+15)+"px",left:(e.pageX+20)+"px"});
+  });
+});
+
+function toTitleCase(str) {
+  return str.toLowerCase().replace(/(?:^|\s)\w/g, function(match) {
+    return match.toUpperCase();
+  });
+}
+
+
+// render the page
+// ###############
+
+function init() {
+  // get the data from the google sheet
+  // https://github.com/jsoma/tabletop
   Tabletop.init( { key: publicSpreadsheetUrl, callback: fetchOtherData } )
 }
 
 function fetchOtherData(data, tabletop) {
-
+  // google sheet can have multiple sheets and we want only the data from one 
   responseData = data[responseWorkbookSheetName].elements
+  // we will use this object to later store things 
+  // like the leafleft map objects for each sector map
   responseDataObject = d3.nest()
     .key(function(d) { return d.sector; })
     .rollup(function(leaves) { 
@@ -32,19 +72,24 @@ function fetchOtherData(data, tabletop) {
     })
     .entries(responseData);
   
+  // we're only loading 1 file, but d3.queue lets us add more data loads 
+  // and wait for all to complete before continuing
   d3.queue()
     .defer(d3.json, '../data/' + geoFilename)
     .await(buildPage);
   
 }
 
+// inputs to this are passed from d3.queue
 function buildPage(error, geoData) {
-  
+  // our admin geo is a topojson, so we need to pull out GeoJSON features
   adminFeatures = topojson.feature(geoData, geoData.objects[topojsonObjectsGroup]).features;
+  // create a map for each sector
   var iterations = 0;
   for(i=0; i<responseDataObject.length; i++) {
     createSectorMap(i, function(){
       iterations++
+      // and do some stuff once all the maps have been created
       if(iterations == responseDataObject.length) {
         syncMaps();
       }
@@ -53,6 +98,8 @@ function buildPage(error, geoData) {
 }
 
 function syncMaps() {
+  // maps all zoom and pan together
+  // https://github.com/jieter/Leaflet.Sync
   for(i=0; i<responseDataObject.length; i++) { 
     for(n=0; n<responseDataObject.length; n++) { 
       if(i !== n) {
@@ -64,16 +111,16 @@ function syncMaps() {
 
 
 var quantize = d3.scaleQuantize()
-    .domain([0, 10])
-    .range(["#fc9272", "#fb6a4a", "#ef3b2c", "#cb181d", "#a50f15", "#67000d"]);
+    .domain([0, 10]) // we will change the domain to match the dataset each time we want to use this
+    .range(myColorScale);
 
 function colorMap(responseDataIndex, responseName) {
   
   d3.select("#map-"+responseDataIndex+" .layer-label").text(responseName);
   
-  responseNameData = responseData.filter(function(d) { 
-      return d.sector == responseDataObject[responseDataIndex].key && d.response == responseName
-    })
+  var responseNameData = responseData.filter(function(d) { 
+    return d.sector == responseDataObject[responseDataIndex].key && d.response == responseName
+  })
     
   var scaleNest = d3.nest()
     .key(function(d) { return d.admin; })
@@ -94,16 +141,18 @@ function colorMap(responseDataIndex, responseName) {
       var styled = false;
       d.properties.response.forEach(function(item,itemIndex){
         if(item.key == responseName) {
-          console.log("match")
-          console.log(item)
           styled = true;
-          d3.select(mapElement).style("fill", function(d){
-            return quantize(item.value.total_number);
-          })
+          d3.select(mapElement)
+            .style("fill", function(d){
+              return quantize(item.value.total_number);
+            })
+            .attr("data-response", responseName);
         }
       });
       if(styled == false){
-        d3.select(mapElement).style("fill", function(d){ return null; })
+        d3.select(mapElement)
+          .style("fill", function(d){ return null; })
+          .attr("data-response", null);
       }
     }
   });
@@ -136,10 +185,8 @@ function createSectorMap(index, callback) {
   
   var map = L.map(mapId, {
     layers: [hotLayer],
-    center: new L.LatLng(-1.672,120.026),
-    zoom: 8,
-    minZoom: 6
-    // maxBounds: [ [-7.5, 115.0], [-9.7, 117.5] ]
+    center: new L.LatLng(0,0),
+    zoom: 8
   });
   responseDataObject[index].leafletMap = map;
   
@@ -156,8 +203,7 @@ function createSectorMap(index, callback) {
   var adminGeoGroup = svg.append('g').attr('id', 'adminGeo-'+index);
   var admins;
 
-  // deep clone the array of objects
-  var sectorJoin = JSON.parse(JSON.stringify(adminFeatures))
+  var sectorJoin = copy(adminFeatures);
   for(a=0;a<sectorJoin.length;a++) {
     for(b=0;b<sectorResponseData[0].values.length;b++) {
       if(sectorJoin[a].properties.ID == sectorResponseData[0].values[b].key) {
@@ -166,11 +212,33 @@ function createSectorMap(index, callback) {
     }
   }
   
+  
   admins = adminGeoGroup.selectAll("path")
     .data(sectorJoin, function(d){ return d.properties.ID; })
     .enter().append("path")
     .attr("class", "admin admin__default")
     .attr("d", path)
+    .on("mouseover", function(d) {
+      // console.log(d3.select(this).attr("data-response"))
+      globalName = d.properties['2']
+      var tooltipText = "<small><span class='place-name'>" + toTitleCase(d.properties['2']) +
+        ", " + toTitleCase(d.properties['3']) + "</span>";
+      
+      var dataKey = d3.select(this).attr('data-response');  
+      if(dataKey !== null) {
+        d.properties.response.forEach(function(item,itemIndex){
+          if(item.key == dataKey) {
+            tooltipText += " <br> Report count: " + item.value.count +
+              " <br> Reached count: " + item.value.total_number;
+          }
+        });
+      }    
+      tooltipText += "</small>";
+      $('#tooltip').html(tooltipText);
+    })
+    .on("mouseout", function(d) {
+      $('#tooltip').empty();
+    })
 
   updatePath = function(){ admins.attr("d", path); }
   map.on('zoom move viewreset', updatePath);
@@ -188,7 +256,7 @@ function createSectorMap(index, callback) {
     .key(function(d) { return d.response; })
     .rollup(function(leaves) { return {"count": leaves.length} })
     .entries(responseData.filter(function(d) { return d.sector == responseDataObject[index].key }));
-  console.log(responseNest)
+
   responseNest.forEach(function(item, itemIndex){
     controlListItems += '<li><a href="#" onClick= "colorMap('+ index + ",'" + item.key + "'" + ')">' + item.key + '</a></li>';
   })
@@ -206,6 +274,10 @@ function createSectorMap(index, callback) {
       '</div>'
   }).addTo(map);
   
+  map.fitBounds(L.geoJSON(sectorJoin).getBounds())
+  
   callback()
   
 }
+
+init();
