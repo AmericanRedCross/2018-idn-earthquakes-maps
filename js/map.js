@@ -1,26 +1,3 @@
-// move these to index.html
-// google sheet with data, see https://github.com/jsoma/tabletop
-var publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1N3g6lG4J16qCJ0dK2W0KhNF4h__jmR5Nhx6WV7oHaZg/';
-// name of spreadsheet tab with the data for the map(s)
-var responseWorkbookSheetName = 'response'
-//  spreadsheet needs...
-// `sector` (defines how many maps are created)
-// `admin` (place-code to match response data to geo data)
-// `response` (activities, defines layers on each map)
-// `number` (quantified impact)
-var geoFilename = 'sulawesi-admin3.json'; // topojson file
-var topojsonObjectsGroup = 'admin3';
-// topojson geoFile should have
-// admin names with a key equal to their level (1,2,3)
-// and an `ID` field with the p-code for the linked admin level
-// page will display admin stack labels for the following (need to exist in the topojson)
-var adminLabelLvls = ["2", "3"];
-// colors from http://colorbrewer2.org & https://bl.ocks.org/mbostock/5577023
-var myColorScale = ["#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#a50f15","#67000d"];
-var defaultViews = {
-  "Displacement and Protection" : "Tarpauline"
-}
-
 // global variables
 var responseData, responseDataObject, adminFeatures
 

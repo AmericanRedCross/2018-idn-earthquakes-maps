@@ -40,7 +40,7 @@
 
 <script>
 // google sheet with data, see https://github.com/jsoma/tabletop
-var publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1N3g6lG4J16qCJ0dK2W0KhNF4h__jmR5Nhx6WV7oHaZg/';
+var publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/10fmbWi62IKI_900kHJKsk1DQE6craab6vWPAjfn2le0/';
 // name of spreadsheet tab with the data for the map(s)
 var responseWorkbookSheetName = 'response'
 //  spreadsheet needs...
@@ -48,7 +48,7 @@ var responseWorkbookSheetName = 'response'
 // `admin` (place-code to match response data to geo data)
 // `response` (activities, defines layers on each map)
 // `number` (quantified impact)
-var geoFilename = 'sulawesi-admin3.json'; // topojson file
+var geoFilename = 'lombok-admin3.json'; // topojson file
 var topojsonObjectsGroup = 'admin3';
 // topojson geoFile should have
 // admin names with a key equal to their level (1,2,3)
@@ -58,7 +58,7 @@ var adminLabelLvls = ["2", "3"];
 // colors from http://colorbrewer2.org & https://bl.ocks.org/mbostock/5577023
 var myColorScale = ["#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#a50f15","#67000d"];
 var defaultViews = {
-  "Displacement and Protection" : "Tarpauline"
+  // "Displacement and Protection" : "Tarpauline"
 }
 </script>
 <script type="text/javascript" src="../js/map.js"></script>
