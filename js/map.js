@@ -38,6 +38,8 @@ function toTitleCase(str) {
   });
 }
 
+var commas = d3.format(",");
+
 // color scale for the maps
 var quantize = d3.scaleQuantize()
     .domain([0, 10]) // we will change the domain to match the dataset each time we want to use this
@@ -121,8 +123,8 @@ function handleMouseover(d,i) {
   if(dataKey !== null) {
     d.properties.response.forEach(function(item,itemIndex){
       if(item.key == dataKey) {
-        tooltipText += " <br> Report count: " + item.value.count +
-          " <br> Reached count: " + item.value.total_number;
+        tooltipText += " <br> Report count: " + commas(item.value.count) +
+          " <br> Reached count: " + commas(item.value.total_number);
       }
     });
   }    
@@ -164,7 +166,7 @@ function colorMap(responseDataIndex, responseName) {
         for(b=0;b<adminLabelLvls.length;b++) {
           placeNames.push( toTitleCase( adminFeatures[n].properties[adminLabelLvls[b]] ) );
         }        
-        listHtml += '<li>' + placeNames.join(", ") + ' - <small>' + scaleNest[i].value.total_number + '</small></li>'
+        listHtml += '<li>' + placeNames.join(", ") + ' - <small>' + commas(scaleNest[i].value.total_number) + '</small></li>'
         break;
       }
     }  
