@@ -17,9 +17,12 @@ var topojsonObjectsGroup = 'admin3';
 var adminLabelLvls = ["2", "3"];
 // colors from http://colorbrewer2.org & https://bl.ocks.org/mbostock/5577023
 var myColorScale = ["#fee0d2","#fcbba1","#fc9272","#fb6a4a","#ef3b2c","#cb181d","#a50f15","#67000d"];
+var defaultViews = {
+  "Displacement and Protection" : "Tarpauline"
+}
 
 // global variables
-var responseData, adminFeatures
+var responseData, responseDataObject, adminFeatures
 
 
 // helper functions
@@ -104,6 +107,7 @@ function buildPage(error, geoData) {
       // and do some stuff once all the maps have been created
       if(iterations == responseDataObject.length) {
         syncMaps();
+        setDefaultView();
       }
     }); 
   }  
@@ -117,6 +121,14 @@ function syncMaps() {
       if(i !== n) {
         responseDataObject[i].leafletMap.sync(responseDataObject[n].leafletMap);
       }
+    }
+  }
+}
+
+function setDefaultView() {
+  for(var i=0; i<responseDataObject.length; i++) {
+    if(defaultViews[responseDataObject[i].key]){
+      colorMap(i, defaultViews[responseDataObject[i].key]);
     }
   }
 }
@@ -189,6 +201,8 @@ function colorMap(responseDataIndex, responseName) {
       d3.max(d3.values(scaleNest), function(d) { return d.value.total_number; })
     ]);
   
+  // this array will hold all active areas and be used to zoom to the area
+  var activeAreas = []
   // go through and color each map unit based on the new filter
   d3.select("#adminGeo-"+responseDataIndex).selectAll('.admin__default').each(function(d,i){
     var mapElement = this;
@@ -196,6 +210,8 @@ function colorMap(responseDataIndex, responseName) {
       var styled = false;
       d.properties.response.forEach(function(item,itemIndex){
         if(item.key == responseName) {
+          // the area is active, push it to our array
+          activeAreas.push(d);
           styled = true;
           d3.select(mapElement)
             .style("fill", function(d){
@@ -212,6 +228,8 @@ function colorMap(responseDataIndex, responseName) {
       }
     }
   });
+  // fit the map to the areas with response activities
+  responseDataObject[responseDataIndex].leafletMap.fitBounds(L.geoJSON(activeAreas).getBounds())
   
 }
 
