@@ -139,9 +139,6 @@ function handleMouseout() {
 
 function colorMap(responseDataIndex, responseName) {
   
-  // change the label in the lower left
-  d3.select("#map-"+responseDataIndex+" .layer-label").html(responseName);
-  
   // filter and look at only data rows for the given map and the selected response activity 
   responseNameData = responseData.filter(function(d) { 
     return d.sector == responseDataObject[responseDataIndex].key && d.response == responseName
@@ -174,11 +171,26 @@ function colorMap(responseDataIndex, responseName) {
   listHtml += '</ol>';
   d3.select("#list-"+responseDataIndex).html(listHtml);
   
+  var theMin = d3.min(d3.values(scaleNest), function(d) { return d.value.total_number; });
+  var theMax = d3.max(d3.values(scaleNest), function(d) { return d.value.total_number; });
   // set the domain of our color scale to match the filtered data
   quantize.domain([
-      d3.min(d3.values(scaleNest), function(d) { return d.value.total_number; }),
-      d3.max(d3.values(scaleNest), function(d) { return d.value.total_number; })
+      theMin, theMax
     ]);
+  
+  d3.select("#map-"+responseDataIndex+" .active-data").text(responseName);
+  // change the label in the lower left
+  var legendHtml ="<div class='legend-color'>"
+  var colorWidth = 100;
+  var spanWidth = 100 / myColorScale.length; 
+  for(var i=0;i<myColorScale.length;i++) {
+    legendHtml += '<span style="display:inline-block;height:10px;width:' + spanWidth + 'px;background-color:' + myColorScale[i] + '"></span>'
+  }
+  legendHtml += "</div>"
+  legendHtml += "<div><div class='legend-min'>" + commas(theMin) + "</div><div class='legend-max'>" + commas(theMax) + "</div></div>"
+  
+  d3.select("#map-"+responseDataIndex+" .layer-legend").html(legendHtml);
+    
   
   // this array will hold all active areas and be used to zoom to the area
   var activeAreas = []
@@ -227,7 +239,7 @@ function createSectorMap(index, callback) {
   
   // create a HOT OSM basemap tile layer to add to our leaflet map
   var hotUrl = 'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-    hotAttribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, tiles from <a href="http://hot.openstreetmap.org/" target="_blank">H.O.T.</a> | <a title="Disclaimer" onClick="showDisclaimer();">Boundaries disclaimer</a>',
+    hotAttribution = '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, tiles from <a href="http://hot.openstreetmap.org/" target="_blank">H.O.T.</a> | <a title="Disclaimer" onClick="showDisclaimer();"><span class="glyphicon glyphicon-info-sign" aria-hidden="true"></span></a>',
     hotLayer = L.tileLayer(hotUrl, {attribution: hotAttribution});
   
   // creat a page element for each unique "sector" value  
@@ -295,7 +307,7 @@ function createSectorMap(index, callback) {
   // the selected "response" for this "sector" map
   L.control.custom({
     position: 'bottomleft',
-    content : '<h3><span class="layer-label label label-default"><span class="note">Select a data layer</span></span></h3>'
+    content : '<div class="layer-legend"><div class="note">Select a data layer</div></div>'
   }).addTo(map);
   
   // create a populate a dropdown
@@ -312,7 +324,7 @@ function createSectorMap(index, callback) {
       position: 'topright',
       content : '<div class="dropdown ">' +
         '<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">' +
-          'Select data ' +
+          '<span class="active-data">Select data</span> ' +
           '<span class="caret"></span>' +
         '</button>' +
         '<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">' +

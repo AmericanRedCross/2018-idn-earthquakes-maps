@@ -11,9 +11,30 @@ html, body {
   width: 100%;
   /* height: 100%; */
 }
+.active-data {
+  font-weight: bolder;
+  font-size: 18px;
+}
+.layer-legend {
+  background-color: #fff;
+  border-radius: 3px;
+  padding: 12px 12px 22px 12px;
+  color: #333;
+  border: 1px solid #ccc;
+  pointer-events: none;
+  cursor: pointer;
+}
+.legend-max {
+  float:right;
+}
+.legend-min {
+  float:left;
+}
 .layer-label .note {
   font-size: 12px;
   font-weight: 300;
+  margin: 0;
+  padding: 0;
 }
 .response-list {
   height: 100px;
