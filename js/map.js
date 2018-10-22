@@ -232,18 +232,15 @@ function createSectorMap(index, callback) {
   
   // creat a page element for each unique "sector" value  
   var mapId = "map-" + index;
-  var mapHtml = '<div class="row">' +
+  var mapHtml = '<div class="col-xs-6">' +
     '<h3>' + sectorResponseData[0].key + '</h3>' +
-    '</div>' +
-    '<div class="row display-row">' +
-    '<div class="col-xs-9" style="margin:0;padding:0;">' +
-    '<div id="' + mapId + '" class="response-map"></div>'+
+    '<div style="margin:0;padding:0;">' +
+      '<div id="' + mapId + '" class="response-map"></div>'+
     '</div>'+
-    '<div class="col-xs-3">' +
     '<div id="list-' + index + '" class="response-list"></div>'+
-    '</div>'+
     '</div>';
   $('#maps-wrapper').append(mapHtml);
+  $('#' + mapId).height(mapHeight);
   
   // initialize the leaflet map
   var map = L.map(mapId, {
