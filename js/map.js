@@ -123,8 +123,8 @@ function handleMouseover(d,i) {
   if(dataKey !== null) {
     d.properties.response.forEach(function(item,itemIndex){
       if(item.key == dataKey) {
-        tooltipText += " <br> Report count: " + commas(item.value.count) +
-          " <br> Reached count: " + commas(item.value.total_number);
+        tooltipText += " <br> Distributions: " + commas(item.value.count) +
+          " <br> Items distributed: " + commas(item.value.total_number);
       }
     });
   }    
