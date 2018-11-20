@@ -173,6 +173,7 @@ function colorMap(responseDataIndex, responseName) {
   
   var theMin = d3.min(d3.values(scaleNest), function(d) { return d.value.total_number; });
   var theMax = d3.max(d3.values(scaleNest), function(d) { return d.value.total_number; });
+  var theSum = d3.sum(d3.values(scaleNest), function(d) { return d.value.total_number; });
   // set the domain of our color scale to match the filtered data
   quantize.domain([
       theMin, theMax
@@ -180,7 +181,8 @@ function colorMap(responseDataIndex, responseName) {
   
   d3.select("#map-"+responseDataIndex+" .active-data").text(responseName);
   // change the label in the lower left
-  var legendHtml ="<div class='legend-color'>"
+  var legendHtml ="<div> Grand total: " + commas(theSum) + "</div>";
+  legendHtml += "<div>Sub-district range:</div> <div class='legend-color'>";
   var colorWidth = 100;
   var spanWidth = 100 / myColorScale.length; 
   for(var i=0;i<myColorScale.length;i++) {
