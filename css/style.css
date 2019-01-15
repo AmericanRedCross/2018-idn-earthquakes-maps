@@ -24,6 +24,10 @@ html, body {
   pointer-events: none;
   cursor: pointer;
 }
+.dropdown-menu.map-layers{
+  max-height: 200px;
+  overflow: scroll;
+}
 .legend-max {
   float:right;
 }

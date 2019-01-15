@@ -329,7 +329,7 @@ function createSectorMap(index, callback) {
           '<span class="active-data">Select data</span> ' +
           '<span class="caret"></span>' +
         '</button>' +
-        '<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu1">' +
+        '<ul class="dropdown-menu map-layers dropdown-menu-right" aria-labelledby="dropdownMenu1">' +
           controlListItems +
           // '<li role="separator" class="divider"></li>' +
           // '<li><a href="#" onClick="colormap(' + index + ",'" + "ALL'" + ')">All data</a></li>' +
