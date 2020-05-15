@@ -51,12 +51,17 @@ var quantize = d3.scaleQuantize()
 
 function init() {
   // get the data from the google sheet
-  Tabletop.init( { key: publicSpreadsheetUrl, callback: fetchOtherData } )
+  Papa.parse(publicSpreadsheetUrl, {
+    download: true,
+    header: true,
+    complete: function(results) {
+      fetchOtherData(results.data);
+    }
+  });
 }
 
-function fetchOtherData(data, tabletop) {
-  // google sheet can have multiple sheets and we want only the data from one 
-  responseData = data[responseWorkbookSheetName].elements
+function fetchOtherData(data) {
+  responseData = data;
   // we will use this object to later store things 
   // like the leafleft map objects for each sector map
   responseDataObject = d3.nest()

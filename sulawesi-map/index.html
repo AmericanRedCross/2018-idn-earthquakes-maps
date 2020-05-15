@@ -40,7 +40,7 @@
 <script src="../js/L.Control.Custom.js"></script>
 <script src="../js/L.Map.Sync.js"></script>
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-<script type="text/javascript" src="../js/tabletop.min.js"></script> <!-- https://github.com/jsoma/tabletop -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/PapaParse/5.1.0/papaparse.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 
 <script src="//cdnjs.cloudflare.com/ajax/libs/d3/4.6.0/d3.min.js"></script>
@@ -48,9 +48,8 @@
 
 <script>
 // google sheet with data, see https://github.com/jsoma/tabletop
-var publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/1N3g6lG4J16qCJ0dK2W0KhNF4h__jmR5Nhx6WV7oHaZg/';
-// name of spreadsheet tab with the data for the map(s)
-var responseWorkbookSheetName = 'response'
+var publicSpreadsheetUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRk-QnSt5GL_rDeoW5N-kvekmtA1w0jb6fQQ0gE8KDVUdcNtyWYf-lYv0236CaFETKngR5rtwQVcYF4/pub?gid=1592322810&single=true&output=csv';
+
 //  spreadsheet needs...
 // `sector` (defines how many maps are created)
 // `admin` (place-code to match response data to geo data)
